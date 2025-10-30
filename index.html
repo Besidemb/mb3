@@ -8,242 +8,143 @@
 <link href="https://fonts.gstatic.com" crossorigin rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  /* === Variáveis de Cor e Estilo === */
-  :root{
-    --bg-1:#2a0b3a;
-    --bg-2:#16061a;
-    --accent:#b57bff;
-    --accent-2:#6f3ec9;
-    --glass: rgba(255,255,255,0.08);
-    --glass-2: rgba(255,255,255,0.04);
-    --text:#f6f3ff;
-    --muted: rgba(246,243,255,0.75);
-    --card-radius:20px;
-    --glow: 1.2;
-    --font-family: 'Poppins', sans-serif;
-    --coin-step: 10;
-  }
+/* === Variáveis de Cor e Estilo === */
+:root{
+  --bg-1:#2a0b3a;
+  --bg-2:#16061a;
+  --accent:#b57bff;      /* Cor principal: neon accent */
+  --accent-2:#6f3ec9;    /* Cor secundária */
+  --glass: rgba(255,255,255,0.08); /* Mais claro */
+  --glass-2: rgba(255,255,255,0.04);
+  --text:#f6f3ff;
+  --muted: rgba(246,243,255,0.75); /* Levemente mais visível */
+  --card-radius:20px; /* Levemente mais arredondado */
+  --glow: 1.2; /* Multiplicador de intensidade do brilho */
+  --font-family: 'Poppins', sans-serif;
+  --coin-step: 10;
+}
 
-  /* Reset + Layout */
-  *{box-sizing:border-box}
-  html{font-size:16px;}
-  html,body{height:100%}
-  body{
-    margin:0;
-    min-height:100vh;
-    font-family:var(--font-family);
-    color:var(--text);
-    background: radial-gradient(1000px 600px at 10% 10%, rgba(135,75,200,0.18), transparent),
-                radial-gradient(800px 600px at 90% 80%, rgba(80,25,120,0.12), transparent),
-                linear-gradient(180deg,var(--bg-1),var(--bg-2));
-    overflow-x:hidden;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    padding:28px 16px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
-
-  body::-webkit-scrollbar { width: 8px; }
-  body::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 4px; }
-  body::-webkit-scrollbar-track { background: var(--bg-2); }
-
-  #bg-canvas{
-    position:fixed;
-    left:0;top:0;
-    width:100vw;height:100vh;
-    z-index:0;
-    pointer-events:none;
-    mix-blend-mode:screen;
-    opacity:0.9;
-    filter:blur(8px) saturate(120%);
-  }
-
-  header{
-    z-index:2;
-    text-align:center;
-    margin-bottom:20px;
-  }
-  h1{
-    font-size:2.8rem;
-    margin:0;
-    letter-spacing:0.4px;
-    text-shadow: 0 6px 22px rgba(150,85,200,0.18), 0 0 18px rgba(180,120,255,0.12);
-    display:inline-block;
-    padding:10px 22px;
-    border-radius:14px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-  .sub { margin-top:8px; color:var(--muted); font-size:1rem }
-
-  .wrap{
-    width:min(1240px,100%);
-    padding: 0 16px;
-    display:grid;
-    grid-template-columns: 1fr 360px;
-    gap:32px;
-    align-items:start;
-    z-index:2;
-  }
-
-  .profiles{
-    display:flex;
-    gap:24px;
-    flex-wrap:wrap;
-    align-items:flex-start;
-    justify-content:flex-start;
-  }
-
-  .card{
-    background: var(--glass);
-    border-radius:var(--card-radius);
-    width:360px;
-    padding:20px;
-    box-shadow: 0 15px 45px rgba(10,6,16,0.6), 0 0 45px rgba(120,60,220,calc(0.08 * var(--glow)));
-    border: 1px solid rgba(255,255,255,0.08);
-    position:relative;
-    overflow:hidden;
-    backdrop-filter: blur(10px) saturate(150%);
-    transition:transform .25s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow .25s ease;
-  }
-  .card:hover{ 
-    transform:translateY(-8px); 
-    box-shadow: 0 20px 60px rgba(10,6,16,0.8), 0 0 50px rgba(120,60,220,calc(0.12 * var(--glow)));
-  }
-
-  .card::before{
-    content:"";
-    position:absolute;
-    left:-40%;
-    top:-40%;
-    width:200%;
-    height:80%;
-    transform:rotate(-18deg);
-    background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.03) 70%, rgba(255,255,255,0.0));
-    pointer-events:none;
-    mix-blend-mode:overlay;
-    opacity: 0.8;
-  }
-  .profile-head{
-    display:flex;align-items:center;gap:16px;
-    margin-bottom:12px;
-  }
-  .avatar{
-    width:60px;height:60px;border-radius:14px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:1.4rem;color:#fff;
-    box-shadow: 0 8px 24px rgba(100,40,200,0.35), inset 0 -8px 25px rgba(255,255,255,0.1);
-  }
-  .profile-head h2{margin:0;font-size:1.35rem}
-  .profile-head p{margin:0;color:var(--muted);font-size:0.95rem}
-
-  .notas{
-    margin-top:16px;
-    min-height:160px;
-    max-height:360px;
-    overflow:auto;
-    padding:14px;
-    border-radius:12px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(255,255,255,0.04));
-    color:var(--text);
-    white-space:pre-wrap;
-    outline:none;
-    border:1px solid rgba(255,255,255,0.05);
-    box-shadow: inset 0 3px 10px rgba(0,0,0,0.65);
-    caret-color:var(--accent);
-    transition: box-shadow .2s ease;
-  }
-  .notas:focus{
-    box-shadow: inset 0 3px 10px rgba(0,0,0,0.65), 0 0 10px rgba(181,123,255,0.4);
-  }
-  .notas[contenteditable="true"]:empty:before{
-    content:attr(data-placeholder);
-    color:rgba(246,243,255,0.45);
-    pointer-events:none;
-  }
-
-  .coins{
-    display:flex;align-items:center;justify-content:space-between;
-    margin-top:16px;
-    padding-top:12px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-  }
-  .coin-count{
-    font-weight:800;
-    font-size:1.2rem;
-    background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
-    padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.05);
-    box-shadow: 0 6px 20px rgba(140,60,220,0.08), inset 0 2px 5px rgba(255,255,255,0.05);
-    display:inline-block;
-    min-width:60px;
-    text-align:center;
-  }
-  .btn {
-    background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
-    border:1px solid rgba(255,255,255,0.12);
-    padding:10px 14px;border-radius:12px;color:var(--text);
-    cursor:pointer;font-weight:700;
-    transition:all .2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    backdrop-filter: blur(8px);
-  }
-  .btn:hover{ 
-    transform:translateY(-4px); 
-    box-shadow:0 12px 36px rgba(120,60,220,0.15), 0 0 12px rgba(120,60,220,0.2);
-    border-color: var(--accent);
-  }
-  .btn:active{ transform:translateY(-1px); }
-
-  .controls{
-    display:flex;gap:10px;flex-wrap:wrap;
-  }
-  .small{font-size:0.9rem;color:var(--muted)}
-
-  .panel{
-    background: linear-gradient(180deg, rgba(10,6,12,0.6), rgba(255,255,255,0.03));
-    border-radius:16px;
-    padding:20px;
-    border:1px solid rgba(255,255,255,0.05);
-    box-shadow: 0 12px 36px rgba(10,6,14,0.7);
-    position:sticky; top:28px; height:fit-content;
-  }
-  .panel h3{ margin:0 0 12px 0; font-size:1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
-  .field{ margin:12px 0; display:flex;flex-direction:column; gap:8px }
-  .field input[type="color"], .field input[type="range"], .field select, .field input[type="number"], .field input[type="text"]{
-    width:100%; 
-    padding:10px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.08);
-    background:rgba(0,0,0,0.3);
-    color:var(--text);
-    transition: border-color .2s ease;
-  }
-  .field input:focus, .field select:focus{ border-color: var(--accent-2); outline:none; }
-
-  .toggle{ display:flex;align-items:center;gap:12px; cursor:pointer; }
-  .toggle input[type="checkbox"]{ transform: scale(1.1); }
-  .small-muted{ font-size:0.9rem;color:var(--muted); font-weight: 500; }
-
-  footer{ 
-    margin-top:40px; 
-    color:var(--muted); 
-    font-size:0.95rem; 
-    z-index:2; 
-    text-align:center;
-    padding-bottom: 20px; 
-  }
-
-  @media (max-width:1200px){
-    .profiles{ justify-content:center; }
-    .card{ width:min(400px, 98%); }
-  }
-  @media (max-width:980px){
-    .wrap{ grid-template-columns:1fr; gap: 28px; }
-    .panel{ position:relative; top:0; }
-  }
+/* === Reset + layout === */
+*{box-sizing:border-box;}
+html{font-size:16px;} /* Base para o rem */
+html,body{height:100%;}
+body{
+  margin:0;min-height:100vh;
+  font-family:var(--font-family);
+  color:var(--text);
+  background: radial-gradient(1000px 600px at 10% 10%, rgba(135,75,200,0.18), transparent),
+              radial-gradient(800px 600px at 90% 80%, rgba(80,25,120,0.12), transparent),
+              linear-gradient(180deg,var(--bg-1),var(--bg-2));
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:28px 16px; /* Ajuste para melhor responsividade */
+  display:flex;flex-direction:column;align-items:center;
+}
+/* Scrollbar */
+body::-webkit-scrollbar { width: 8px; }
+body::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 4px; }
+body::-webkit-scrollbar-track { background: var(--bg-2); }
+/* Canvas */
+#bg-canvas{
+  position:fixed;left:0;top:0;width:100vw;height:100vh;
+  z-index:0;pointer-events:none;
+  mix-blend-mode:screen;
+  opacity:0.9;
+  filter:blur(8px) saturate(120%);
+}
+/* Header */
+header{z-index:2;text-align:center;margin-bottom:20px;}
+h1{
+  font-size:2.8rem;margin:0;letter-spacing:0.4px;
+  text-shadow: 0 6px 22px rgba(150,85,200,0.18), 0 0 18px rgba(180,120,255,0.12);
+  display:inline-block;
+  padding:10px 22px;border-radius:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.sub { margin-top:8px; color:var(--muted); font-size:1rem }
+/* Main layout */
+.wrap{
+  width:min(1240px,100%);
+  padding: 0 16px;
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap:32px;
+  align-items:start;
+  z-index:2;
+}
+/* Profiles */
+.profiles{
+  display:flex;
+  gap:24px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  justify-content:flex-start;
+}
+.card{
+  background: var(--glass);
+  border-radius:var(--card-radius);
+  width:360px;
+  padding:20px;
+  box-shadow: 0 15px 45px rgba(10,6,16,0.6), 0 0 45px rgba(120,60,220,calc(0.08 * var(--glow)));
+  border: 1px solid rgba(255,255,255,0.08);
+  position:relative;
+  overflow:hidden;
+  backdrop-filter: blur(10px) saturate(150%);
+  transition:transform .25s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow .25s ease;
+}
+.card:hover{ 
+  transform:translateY(-8px); 
+  box-shadow: 0 20px 60px rgba(10,6,16,0.8), 0 0 50px rgba(120,60,220,calc(0.12 * var(--glow)));
+}
+.card::before{
+  content:"";
+  position:absolute;left:-40%;top:-40%;
+  width:200%;height:80%;
+  transform:rotate(-18deg);
+  background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.03) 70%, rgba(255,255,255,0.0));
+  pointer-events:none;mix-blend-mode:overlay;opacity:0.8;
+}
+.profile-head{display:flex;align-items:center;gap:16px;margin-bottom:12px;}
+.avatar{width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4rem;color:#fff;
+box-shadow: 0 8px 24px rgba(100,40,200,0.35), inset 0 -8px 25px rgba(255,255,255,0.1);}
+.profile-head h2{margin:0;font-size:1.35rem;}
+.profile-head p{margin:0;color:var(--muted);font-size:0.95rem;}
+.notas{
+  margin-top:16px;min-height:160px;max-height:360px;overflow:auto;padding:14px;border-radius:12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(255,255,255,0.04));
+  color:var(--text);white-space:pre-wrap;outline:none;border:1px solid rgba(255,255,255,0.05);
+  box-shadow: inset 0 3px 10px rgba(0,0,0,0.65);caret-color:var(--accent);transition: box-shadow .2s ease;
+}
+.notas:focus{box-shadow: inset 0 3px 10px rgba(0,0,0,0.65), 0 0 10px rgba(181,123,255,0.4);}
+.notas[contenteditable="true"]:empty:before{content:attr(data-placeholder);color:rgba(246,243,255,0.45);pointer-events:none;}
+.coins{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top: 1px solid rgba(255,255,255,0.05);}
+.coin-count{font-weight:800;font-size:1.2rem;background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.05);
+box-shadow: 0 6px 20px rgba(140,60,220,0.08), inset 0 2px 5px rgba(255,255,255,0.05);
+display:inline-block;min-width:60px;text-align:center;}
+.btn {background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
+border:1px solid rgba(255,255,255,0.12);padding:10px 14px;border-radius:12px;color:var(--text);
+cursor:pointer;font-weight:700;transition:all .2s cubic-bezier(0.25, 0.46, 0.45, 0.94);backdrop-filter: blur(8px);}
+.btn:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(120,60,220,0.15), 0 0 12px rgba(120,60,220,0.2);border-color: var(--accent);}
+.btn:active{ transform:translateY(-1px); }
+.controls{display:flex;gap:10px;flex-wrap:wrap;}
+.small{font-size:0.9rem;color:var(--muted);}
+.panel{background: linear-gradient(180deg, rgba(10,6,12,0.6), rgba(255,255,255,0.03));
+border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.05);box-shadow: 0 12px 36px rgba(10,6,14,0.7);position:sticky; top:28px; height:fit-content;}
+.panel h3{ margin:0 0 12px 0; font-size:1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
+.field{ margin:12px 0; display:flex;flex-direction:column; gap:8px }
+.field input[type="color"], .field input[type="range"], .field select, .field input[type="number"], .field input[type="text"]{width:100%; padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);color:var(--text);transition: border-color .2s ease;}
+.field input:focus, .field select:focus{ border-color: var(--accent-2); outline:none; }
+.toggle{ display:flex;align-items:center;gap:12px; cursor:pointer; }
+.toggle input[type="checkbox"]{ transform: scale(1.1); }
+.small-muted{ font-size:0.9rem;color:var(--muted); font-weight: 500; }
+footer{ margin-top:40px; color:var(--muted); font-size:0.95rem; z-index:2; text-align:center; padding-bottom: 20px; }
+@media (max-width:1200px){ .profiles{ justify-content:center; } .card{ width:min(400px, 98%); } }
+@media (max-width:980px){ .wrap{ grid-template-columns:1fr; gap: 28px; } .panel{ position:relative; top:0; } }
 </style>
 </head>
 <body>
@@ -257,7 +158,6 @@
 <main class="wrap" role="main" aria-labelledby="main-title">
   <section aria-label="Perfis e notas">
     <div class="profiles" id="profiles">
-      <!-- Card MB -->
       <article class="card" data-profile="mb" id="card-mb">
         <div class="profile-head">
           <div class="avatar" aria-hidden="true">MB</div>
@@ -266,24 +166,26 @@
             <p class="small">Seu cantinho pessoal</p>
           </div>
         </div>
+
         <div class="notas" id="notas-mb" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
+
         <div class="coins">
           <div>
             <div class="small">Moedas</div>
             <div class="coin-count" id="moedas-mb" aria-live="polite">100</div>
           </div>
           <div class="controls">
-            <button class="btn" onclick="alterarMoedas('mb', -getCoinStep())">-</button>
-            <button class="btn" onclick="alterarMoedas('mb', getCoinStep())">+</button>
+            <button class="btn" onclick="alterarMoedas('mb', -getCoinStep())" aria-label="Diminuir moedas MB">-</button>
+            <button class="btn" onclick="alterarMoedas('mb', getCoinStep())" aria-label="Aumentar moedas MB">+</button>
           </div>
         </div>
+
         <div style="margin-top:16px;display:flex;gap:10px;justify-content:space-between;">
           <button class="btn" onclick="resetProfile('mb')">Resetar Perfil</button>
           <button class="btn" onclick="exportProfile('mb')">Exportar Perfil</button>
         </div>
       </article>
 
-      <!-- Card Nath -->
       <article class="card" data-profile="nath" id="card-nath">
         <div class="profile-head">
           <div class="avatar" aria-hidden="true">N</div>
@@ -292,39 +194,47 @@
             <p class="small">Cantinho dela</p>
           </div>
         </div>
+
         <div class="notas" id="notas-nath" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
+
         <div class="coins">
           <div>
             <div class="small">Moedas</div>
             <div class="coin-count" id="moedas-nath" aria-live="polite">100</div>
           </div>
           <div class="controls">
-            <button class="btn" onclick="alterarMoedas('nath', -getCoinStep())">-</button>
-            <button class="btn" onclick="alterarMoedas('nath', getCoinStep())">+</button>
+            <button class="btn" onclick="alterarMoedas('nath', -getCoinStep())" aria-label="Diminuir moedas Nath">-</button>
+            <button class="btn" onclick="alterarMoedas('nath', getCoinStep())" aria-label="Aumentar moedas Nath">+</button>
           </div>
         </div>
+
         <div style="margin-top:16px;display:flex;gap:10px;justify-content:space-between;">
           <button class="btn" onclick="resetProfile('nath')">Resetar Perfil</button>
           <button class="btn" onclick="exportProfile('nath')">Exportar Perfil</button>
         </div>
       </article>
+      
     </div>
   </section>
 
   <aside class="panel" aria-label="Painel de ajustes">
     <h3>⚙️ Ajustes</h3>
+
     <div class="field">
       <label class="small-muted">Cor principal (neon)</label>
       <input type="color" id="input-accent" value="#b57bff">
     </div>
+
     <div class="field">
       <label class="small-muted">Cor secundária</label>
       <input type="color" id="input-accent2" value="#6f3ec9">
     </div>
+
     <div class="field">
       <label class="small-muted">Brilho (0.2 — 3)</label>
       <input type="range" id="input-glow" min="0.2" max="3" step="0.1" value="1.2">
     </div>
+
     <div class="field">
       <label class="small-muted">Fonte</label>
       <select id="input-font">
@@ -334,28 +244,348 @@
         <option value="Trebuchet MS, sans-serif">Trebuchet</option>
       </select>
     </div>
+
     <div class="field">
       <label class="small-muted">Tamanho da fonte (px)</label>
       <input type="number" id="input-fontsize" min="14" max="22" step="1" value="16">
     </div>
+
     <div class="field">
       <label class="small-muted">Incremento das moedas</label>
       <input type="number" id="input-step" min="1" max="1000" value="10">
     </div>
+
     <div class="field toggle">
       <input type="checkbox" id="toggle-particles" checked>
       <label for="toggle-particles" class="small-muted">Mostrar partículas/névoa</label>
     </div>
+
     <div class="field">
       <label class="small-muted">Título do Site</label>
       <input type="text" id="input-title" placeholder="Nosso Cantinho 💜" value="Nosso Cantinho 💜">
     </div>
+
     <div style="display:flex;gap:10px;margin-top:20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
       <button class="btn" onclick="salvarAjustes()">Salvar Ajustes</button>
       <button class="btn" onclick="resetAjustes()">Restaurar Padrão</button>
     </div>
+
     <hr style="margin:20px 0;border:none;height:1px;background:rgba(255,255,255,0.05)">
+
     <div style="display:flex;flex-direction:column;gap:10px">
       <div class="small-muted">Backup / Importar Dados</div>
       <button class="btn" onclick="exportAll()">Exportar Tudo (JSON)</button>
-      <button class="
+      <button class="btn" onclick="importPrompt()">Importar Backup</button>
+    </div>
+  </aside>
+</main>
+
+<footer>Feito com 💜 por MB & Nath • Tudo salvo localmente no seu navegador</footer>
+
+<script>
+/* ======================
+   Utility & state
+   ====================== */
+const STORAGE_KEY = 'nossoCantinho_v2';
+const DEFAULTS = {
+  settings: {
+    accent: '#b57bff',
+    accent2: '#6f3ec9',
+    glow: 1.2,
+    font: "Poppins, sans-serif",
+    fontsize: 16,
+    step: 10,
+    particles: true,
+    title: "Nosso Cantinho 💜"
+  },
+  profiles: {
+    mb: {notas: '', moedas: 100},
+    nath: {notas: '', moedas: 100}
+  }
+};
+
+let state = loadState() || DEFAULTS;
+
+/* Apply settings to CSS variables and UI */
+function applySettingsToUI(){
+  const s = state.settings;
+  document.documentElement.style.setProperty('--accent', s.accent);
+  document.documentElement.style.setProperty('--accent-2', s.accent2);
+  document.documentElement.style.setProperty('--glow', s.glow);
+  document.documentElement.style.setProperty('--font-family', s.font);
+  document.documentElement.style.setProperty('--coin-step', s.step);
+  document.documentElement.style.fontSize = s.fontsize + 'px';
+  document.getElementById('input-accent').value = s.accent;
+  document.getElementById('input-accent2').value = s.accent2;
+  document.getElementById('input-glow').value = s.glow;
+  document.getElementById('input-font').value = s.font;
+  document.getElementById('input-fontsize').value = s.fontsize;
+  document.getElementById('input-step').value = s.step;
+  document.getElementById('toggle-particles').checked = !!s.particles;
+  document.getElementById('input-title').value = s.title;
+  document.querySelector('h1').textContent = s.title;
+  document.title = s.title + ' — Versão Refletiva'; 
+}
+
+/* Load/save state */
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){return null;}
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+/* ======================
+   Profiles: notes & coins
+   ====================== */
+function renderProfiles(){
+  document.getElementById('notas-mb').innerText = state.profiles.mb.notas || '';
+  document.getElementById('moedas-mb').textContent = state.profiles.mb.moedas ?? 0;
+  document.getElementById('notas-nath').innerText = state.profiles.nath.notas || '';
+  document.getElementById('moedas-nath').textContent = state.profiles.nath.moedas ?? 0;
+}
+function alterarMoedas(profile, valor){
+  const p = state.profiles[profile];
+  if(!p) return;
+  const novo = Math.max(0, (Number(p.moedas)||0) + Number(valor));
+  p.moedas = novo;
+  saveState();
+  renderProfiles();
+  pulseCount(profile);
+}
+function getCoinStep(){ return Number(state.settings.step) || 10; }
+function pulseCount(profile){
+  const el = document.getElementById('moedas-'+profile);
+  if(!el) return;
+  el.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}], {duration:360, easing:'ease-out'});
+}
+
+/* Reset / export per profile */
+function resetProfile(profile){
+  if(!state.profiles[profile]) return;
+  if(!confirm(`Tem certeza que deseja resetar os dados de ${profile}?`)) return; 
+  state.profiles[profile] = {...DEFAULTS.profiles[profile]}; 
+  saveState(); renderProfiles();
+}
+function exportProfile(profile){
+  const p = state.profiles[profile];
+  const json = JSON.stringify({profile, data:p}, null, 2);
+  navigator.clipboard?.writeText(json).then(()=> alert('Perfil copiado para área de transferência.'))
+  .catch(()=> prompt('Copie este JSON:', json));
+}
+
+/* Global export/import */
+function exportAll(){
+  const json = JSON.stringify(state, null, 2);
+  navigator.clipboard?.writeText(json).then(()=> alert('Backup copiado para área de transferência.'))
+  .catch(()=> {
+    const blob = new Blob([json], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download='nossoCantinho_backup.json'; a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+function importPrompt(){
+  const raw = prompt('Cole o JSON do backup aqui (substitui tudo):');
+  if(!raw) return;
+  try{
+    const parsed = JSON.parse(raw);
+    if (!parsed.settings || !parsed.profiles) throw new Error("Estrutura JSON inválida."); 
+    state = parsed;
+    saveState();
+    applySettingsToUI();
+    renderProfiles();
+    alert('Importado com sucesso. Recarregue a página se necessário.');
+  }catch(e){ alert('JSON inválido ou estrutura incorreta.'); }
+}
+
+/* ======================
+   Settings controls
+   ====================== */
+function salvarAjustes(){
+  state.settings.accent = document.getElementById('input-accent').value;
+  state.settings.accent2 = document.getElementById('input-accent2').value;
+  state.settings.glow = Number(document.getElementById('input-glow').value);
+  state.settings.font = document.getElementById('input-font').value;
+  state.settings.fontsize = Number(document.getElementById('input-fontsize').value);
+  state.settings.step = Number(document.getElementById('input-step').value);
+  state.settings.particles = document.getElementById('toggle-particles').checked;
+  state.settings.title = document.getElementById('input-title').value || 'Nosso Cantinho 💜';
+  saveState(); applySettingsToUI();
+  alert('Ajustes salvos!');
+}
+function resetAjustes(){
+  if(!confirm('Tem certeza que deseja restaurar os ajustes para o padrão?')) return; 
+  state.settings = {...DEFAULTS.settings};
+  saveState(); applySettingsToUI(); alert('Ajustes restaurados para o padrão.');
+}
+
+/* ======================
+   Auto-save notes on blur (apenas ao sair do campo)
+   ====================== */
+function hookNotesAutoSave(){
+  ['mb','nath'].forEach(id=>{
+    const el = document.getElementById('notas-'+id);
+    el.addEventListener('blur', ()=> {
+      state.profiles[id].notas = el.innerText;
+      saveState();
+      console.log(`Notas de ${id} salvas.`);
+    });
+  });
+}
+
+/* ======================
+   Startup
+   ====================== */
+function init(){
+  // merge defaults if needed
+  state = Object.assign({}, DEFAULTS, state);
+  state.settings = Object.assign({}, DEFAULTS.settings, state.settings || {});
+  state.profiles = Object.assign({}, DEFAULTS.profiles, state.profiles || {});
+  applySettingsToUI();
+  renderProfiles();
+  hookNotesAutoSave();
+
+  // listen to live changes of color inputs to preview
+  document.getElementById('input-accent').addEventListener('input', e=>{ document.documentElement.style.setProperty('--accent', e.target.value); });
+  document.getElementById('input-accent2').addEventListener('input', e=>{ document.documentElement.style.setProperty('--accent-2', e.target.value); });
+  document.getElementById('input-glow').addEventListener('input', e=>{ document.documentElement.style.setProperty('--glow', e.target.value); });
+  document.getElementById('input-font').addEventListener('change', e=>{ document.documentElement.style.setProperty('--font-family', e.target.value); });
+  document.getElementById('input-fontsize').addEventListener('input', e=>{ document.documentElement.style.fontSize = e.target.value + 'px'; });
+  document.getElementById('input-step').addEventListener('input', e=>{ document.documentElement.style.setProperty('--coin-step', e.target.value); });
+  document.getElementById('input-title').addEventListener('input', e=>{
+    document.querySelector('h1').textContent = e.target.value;
+    document.title = e.target.value + ' — Versão Refletiva'; 
+  });
+
+  // sync coins visible when step changed
+  document.getElementById('input-step').addEventListener('change', e=>{ state.settings.step = Number(e.target.value); saveState(); });
+
+  // before unload save explicit
+  window.addEventListener('beforeunload', ()=> saveState());
+}
+
+/* ======================
+   Canvas Particles (soft fog + dots)
+   ====================== */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let resizeTimeout = null;
+function setupCanvas(){
+  canvas.width = innerWidth * devicePixelRatio;
+  canvas.height = innerHeight * devicePixelRatio;
+  canvas.style.width = innerWidth + 'px';
+  canvas.style.height = innerHeight + 'px';
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+function createParticles(){
+  particles = [];
+  const count = Math.round((innerWidth*innerHeight) / 70000);
+  for(let i=0;i<count;i++){
+    particles.push({
+      x: Math.random()*innerWidth,
+      y: Math.random()*innerHeight,
+      r: Math.random()*1.6 + 0.4,
+      vx: (Math.random()-0.5)*0.2,
+      vy: (Math.random()-0.5)*0.2,
+      alpha: Math.random()*0.6 + 0.1,
+      phase: Math.random()*Math.PI*2
+    });
+  }
+}
+let last = performance.now();
+function animateCanvas(t){
+  const dt = (t-last)/1000;
+  last = t;
+  if(!state.settings.particles){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    requestAnimationFrame(animateCanvas);
+    return;
+  }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // soft radial glow spots
+  const grad = ctx.createRadialGradient(innerWidth*0.15, innerHeight*0.12, 0, innerWidth*0.15, innerHeight*0.12, Math.max(innerWidth,innerHeight)*0.8);
+  grad.addColorStop(0, 'rgba(191,128,255,0.06)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,innerWidth,innerHeight);
+
+  // moving particles (small dots)
+  particles.forEach(p=>{
+    p.x += p.vx * (0.6 + Math.sin(t/2000 + p.phase)*0.3);
+    p.y += p.vy * (0.6 + Math.cos(t/2000 + p.phase)*0.3);
+    p.phase += 0.01;
+    if(p.x < -10) p.x = innerWidth + 10;
+    if(p.x > innerWidth + 10) p.x = -10;
+    if(p.y < -10) p.y = innerHeight + 10;
+    if(p.y > innerHeight + 10) p.y = -10;
+
+    ctx.beginPath();
+    ctx.globalAlpha = p.alpha * 0.9;
+    ctx.fillStyle = `rgba(200,150,255,${p.alpha * 0.9})`;
+    ctx.arc(p.x, p.y, p.r * (1 + Math.sin(p.phase)*0.4), 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // subtle horizontal scanline reflection
+  ctx.globalCompositeOperation = 'lighter';
+  for(let i=0;i<3;i++){
+    ctx.fillStyle = `rgba(255,255,255,${0.012 * (i+1) * state.settings.glow})`;
+    const h = (Math.sin(t/2000 + i)*0.5 + 0.5) * innerHeight;
+    ctx.fillRect(0, h, innerWidth, 1 + Math.abs(Math.sin(t/800 + i))*2);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(animateCanvas);
+}
+
+function onResize(){
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(()=>{
+    setupCanvas();
+    createParticles();
+  }, 120);
+}
+
+/* ======================
+   Helpers & Init calls
+   ====================== */
+
+init();
+setupCanvas();
+createParticles();
+requestAnimationFrame(animateCanvas);
+window.addEventListener('resize', onResize);
+
+/* load saved profiles and settings into UI */
+renderProfiles();
+applySettingsToUI();
+
+/* Expose some functions to window for buttons */
+window.alterarMoedas = alterarMoedas;
+window.getCoinStep = getCoinStep;
+window.salvarAjustes = salvarAjustes;
+window.resetAjustes = resetAjustes;
+window.resetProfile = resetProfile;
+window.exportProfile = exportProfile;
+window.exportAll = exportAll;
+window.importPrompt = importPrompt;
+
+/* If particles toggle changes, reflect immediately */
+document.getElementById('toggle-particles').addEventListener('change', e=>{
+  state.settings.particles = e.target.checked;
+  saveState();
+});
+
+/* Defensive: ensure state saved on first load */
+saveState();
+
+</script>
+</body>
+          </html>
