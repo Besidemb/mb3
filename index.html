@@ -3,102 +3,90 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Nosso Cantinho 💜 — Versão Definitiva</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Nosso Cantinho 💜</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <canvas id="bg-canvas"></canvas>
 
   <header>
     <h1 id="site-title">Nosso Cantinho 💜</h1>
     <div class="sub">Um lugar nosso — notas, moedas, mensagens e estrelas ✨</div>
   </header>
 
-  <main class="wrap" role="main">
-    <!-- Perfis e notas -->
-    <section aria-label="Perfis e notas">
-      <div class="profiles">
-        <!-- MB -->
-        <article class="card" id="card-mb" data-profile="mb">
-          <div class="profile-head">
-            <div class="avatar">MB</div>
-            <div>
-              <h2>MB</h2>
-              <p class="small-muted">Seu cantinho</p>
-            </div>
-          </div>
-          <div id="notas-mb" class="notas" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
-          <div class="coins">
-            <div class="coin-display">
-              <span class="coin-anim coin-bounce-left"></span>
-              <div class="coin-info">
-                <div class="small-muted">Moedas</div>
-                <div class="coin-count" id="moedas-mb">100</div>
-              </div>
-              <span class="coin-anim coin-bounce-right"></span>
-            </div>
-            <div class="controls">
-              <button class="btn" onclick="alterarMoedas('mb', -getCoinStep())">-</button>
-              <button class="btn" onclick="alterarMoedas('mb', getCoinStep())">+</button>
-            </div>
-          </div>
-          <div class="card-actions">
-            <button class="btn" onclick="resetProfile('mb')">Reset</button>
-            <button class="btn" onclick="exportProfile('mb')">Exportar</button>
-          </div>
-        </article>
-
-        <!-- Nath -->
-        <article class="card" id="card-nath" data-profile="nath">
-          <div class="profile-head">
-            <div class="avatar">N</div>
-            <div>
-              <h2>Nath</h2>
-              <p class="small-muted">Cantinho dela</p>
-            </div>
-          </div>
-          <div id="notas-nath" class="notas" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
-          <div class="coins">
-            <div class="coin-display">
-              <span class="coin-anim coin-bounce-left"></span>
-              <div class="coin-info">
-                <div class="small-muted">Moedas</div>
-                <div class="coin-count" id="moedas-nath">100</div>
-              </div>
-              <span class="coin-anim coin-bounce-right"></span>
-            </div>
-            <div class="controls">
-              <button class="btn" onclick="alterarMoedas('nath', -getCoinStep())">-</button>
-              <button class="btn" onclick="alterarMoedas('nath', getCoinStep())">+</button>
-            </div>
-          </div>
-          <div class="card-actions">
-            <button class="btn" onclick="resetProfile('nath')">Reset</button>
-            <button class="btn" onclick="exportProfile('nath')">Exportar</button>
-          </div>
-        </article>
-      </div>
-
-      <!-- Chat -->
-      <div class="card chat-wrap">
-        <div class="chat-header">
+  <main class="wrap">
+    <!-- Perfis -->
+    <div class="profiles">
+      <article class="card" id="card-mb">
+        <div class="profile-head">
+          <div class="avatar">MB</div>
           <div>
-            <strong>Chat privado</strong>
-            <span class="small-muted">conversa entre MB e Nath</span>
-          </div>
-          <div>
-            <div class="small-muted">Logado como: <span id="logged-as">—</span></div>
-            <button class="btn" onclick="logout()">Sair</button>
+            <h2>MB</h2>
+            <p class="small-muted">Seu cantinho</p>
           </div>
         </div>
-        <div class="messages" id="messages"></div>
-        <div class="composer">
-          <input type="text" id="message-input" placeholder="Escreva uma mensagem...">
-          <button class="send btn" onclick="sendComposer()">Enviar</button>
+        <div id="notas-mb" class="notas" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
+        <div class="coins">
+          <div class="coin-display">
+            <span class="coin-anim coin-bounce-left"></span>
+            <div class="coin-info">
+              <div class="small-muted">Moedas</div>
+              <div class="coin-count" id="moedas-mb">100</div>
+            </div>
+            <span class="coin-anim coin-bounce-right"></span>
+          </div>
+          <div class="controls">
+            <button class="btn" onclick="alterarMoedas('mb', -getCoinStep())">-</button>
+            <button class="btn" onclick="alterarMoedas('mb', getCoinStep())">+</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="card-nath">
+        <div class="profile-head">
+          <div class="avatar">N</div>
+          <div>
+            <h2>Nath</h2>
+            <p class="small-muted">Cantinho dela</p>
+          </div>
+        </div>
+        <div id="notas-nath" class="notas" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
+        <div class="coins">
+          <div class="coin-display">
+            <span class="coin-anim coin-bounce-left"></span>
+            <div class="coin-info">
+              <div class="small-muted">Moedas</div>
+              <div class="coin-count" id="moedas-nath">100</div>
+            </div>
+            <span class="coin-anim coin-bounce-right"></span>
+          </div>
+          <div class="controls">
+            <button class="btn" onclick="alterarMoedas('nath', -getCoinStep())">-</button>
+            <button class="btn" onclick="alterarMoedas('nath', getCoinStep())">+</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Chat -->
+    <div class="card chat-wrap">
+      <div class="chat-header">
+        <div>
+          <strong>Chat privado</strong>
+          <span class="small-muted">conversa entre MB e Nath</span>
+        </div>
+        <div>
+          <div class="small-muted">Logado como: <span id="logged-as">—</span></div>
+          <button class="btn" onclick="logout()">Sair</button>
         </div>
       </div>
-    </section>
+      <div class="messages" id="messages"></div>
+      <div class="composer">
+        <input type="text" id="message-input" placeholder="Escreva uma mensagem...">
+        <button class="send btn" onclick="sendComposer()">Enviar</button>
+      </div>
+    </div>
   </main>
 
   <!-- Login Modal -->
@@ -114,7 +102,7 @@
       </div>
       <div class="modal-actions">
         <button class="btn" onclick="confirmLogin()">Confirmar</button>
-        <button class="btn" onclick="closeLoginIfAllowed()">Cancelar</button>
+        <button class="btn" onclick="closeLogin()">Cancelar</button>
       </div>
       <div class="small-muted">Senha: <strong>9898</strong></div>
     </div>
