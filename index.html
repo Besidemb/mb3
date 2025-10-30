@@ -1,115 +1,680 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Nosso Cantinho 💜</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Nosso Cantinho 💜 — Versão Refletiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#2a0b3a;
+    --bg-2:#16061a;
+    --accent:#b57bff;      /* neon accent */
+    --accent-2:#6f3ec9;    /* secondary */
+    --glass: rgba(255,255,255,0.06);
+    --glass-2: rgba(255,255,255,0.04);
+    --text:#f6f3ff;
+    --muted: rgba(246,243,255,0.7);
+    --card-radius:18px;
+    --glow: 1.2; /* multiplier for glow intensity */
+    --font-family: 'Poppins', sans-serif;
+    --coin-step: 10;
+  }
+
+  /* Reset + layout */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:var(--font-family);
+    color:var(--text);
+    background: radial-gradient(1000px 600px at 10% 10%, rgba(135,75,200,0.18), transparent),
+                radial-gradient(800px 600px at 90% 80%, rgba(80,25,120,0.12), transparent),
+                linear-gradient(180deg,var(--bg-1),var(--bg-2));
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    padding:28px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* Canvas background occupies full area behind content */
+  #bg-canvas{
+    position:fixed;
+    left:0;top:0;
+    width:100vw;height:100vh;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode:screen;
+    opacity:0.9;
+    filter:blur(8px) saturate(120%);
+  }
+
+  header{
+    z-index:2;
+    text-align:center;
+    margin-bottom:14px;
+  }
+  h1{
+    font-size:2.6rem;
+    margin:0;
+    letter-spacing:0.4px;
+    text-shadow: 0 6px 22px rgba(150,85,200,0.18), 0 0 18px rgba(180,120,255,0.12);
+    display:inline-block;
+    padding:8px 18px;
+    border-radius:12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+    backdrop-filter: blur(4px);
+  }
+  .sub { margin-top:6px; color:var(--muted); font-size:0.95rem }
+
+  /* Main layout */
+  .wrap{
+    width:min(1180px,96vw);
+    display:grid;
+    grid-template-columns: 1fr 360px;
+    gap:26px;
+    align-items:start;
+    z-index:2;
+  }
+
+  /* Left: profiles area */
+  .profiles{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:flex-start;
+  }
+
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border-radius:var(--card-radius);
+    width:320px;
+    padding:18px;
+    box-shadow: 0 10px 30px rgba(10,6,16,0.6), 0 0 40px rgba(120,60,220,calc(0.06 * var(--glow)));
+    border: 1px solid rgba(255,255,255,0.04);
+    position:relative;
+    overflow:hidden;
+    backdrop-filter: blur(8px) saturate(120%);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .card:hover{ transform:translateY(-6px) }
+
+  /* Reflective slanted gloss */
+  .card::before{
+    content:"";
+    position:absolute;
+    left:-40%;
+    top:-40%;
+    width:200%;
+    height:80%;
+    transform:rotate(-18deg);
+    background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.02) 70%, rgba(255,255,255,0.0));
+    pointer-events:none;
+    mix-blend-mode:overlay;
+  }
+  .profile-head{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:10px;
+  }
+  .avatar{
+    width:56px;height:56px;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:1.1rem;color:#fff;
+    box-shadow: 0 6px 18px rgba(100,40,200,0.28), inset 0 -6px 22px rgba(255,255,255,0.06);
+  }
+  .profile-head h2{margin:0;font-size:1.25rem}
+  .profile-head p{margin:0;color:var(--muted);font-size:0.9rem}
+
+  /* notes area */
+  .notas{
+    margin-top:12px;
+    min-height:140px;
+    max-height:320px;
+    overflow:auto;
+    padding:12px;
+    border-radius:10px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(255,255,255,0.02));
+    color:var(--text);
+    white-space:pre-wrap;
+    outline:none;
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.55);
+    caret-color:var(--accent);
+  }
+  .notas[contenteditable="true"]:empty:before{
+    content:attr(data-placeholder);
+    color:rgba(246,243,255,0.45);
+    pointer-events:none;
+  }
+
+  /* coins */
+  .coins{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:14px;
+  }
+  .coin-count{
+    font-weight:700;
+    background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 6px 20px rgba(140,60,220,0.06);
+  }
+  .btn {
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.08);
+    padding:8px 12px;border-radius:10px;color:var(--text);
+    cursor:pointer;font-weight:600;
+    transition:all .16s ease;
+    backdrop-filter: blur(6px);
+  }
+  .btn:hover{ transform:translateY(-3px); box-shadow:0 10px 30px rgba(120,60,220,0.08) }
+
+  .controls{
+    display:flex;gap:8px;flex-wrap:wrap;
+  }
+  .small{font-size:0.86rem;color:var(--muted)}
+
+  /* Right: settings panel */
+  .panel{
+    background: linear-gradient(180deg, rgba(10,6,12,0.48), rgba(255,255,255,0.01));
+    border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 8px 24px rgba(10,6,14,0.6);
+    position:sticky; top:28px; height:fit-content;
+  }
+  .panel h3{ margin:0 0 8px 0; font-size:1.05rem }
+  .field{ margin:10px 0; display:flex;flex-direction:column; gap:6px }
+  .field input[type="color"], .field input[type="range"], .field select, .field input[type="number"], .field input[type="text"]{
+    width:100%; padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);
+    background:transparent;color:var(--text);
+  }
+  .toggle{ display:flex;align-items:center;gap:8px }
+  .small-muted{ font-size:0.85rem;color:var(--muted) }
+
+  footer{ margin-top:28px; color:var(--muted); font-size:0.92rem; z-index:2; text-align:center }
+
+  /* Responsive */
+  @media (max-width:980px){
+    .wrap{ grid-template-columns:1fr; }
+    .panel{ position:relative; top:0; }
+    .card{ width:100% }
+  }
+
+</style>
 </head>
 <body>
-  <canvas id="bg-canvas"></canvas>
+<canvas id="bg-canvas"></canvas>
 
-  <header>
-    <h1 id="site-title">Nosso Cantinho 💜</h1>
-    <div class="sub">Um lugar nosso — notas, moedas, mensagens e estrelas ✨</div>
-  </header>
+<header>
+  <h1>Nosso Cantinho 💜</h1>
+  <div class="sub">Um lugar nosso — notas, moedas e memórias</div>
+</header>
 
-  <main class="wrap">
-    <!-- Perfis -->
-    <div class="profiles">
-      <article class="card" id="card-mb">
+<main class="wrap" role="main" aria-labelledby="main-title">
+  <section aria-label="Perfis e notas">
+    <div class="profiles" id="profiles">
+      <!-- Profile MB -->
+      <article class="card" data-profile="mb" id="card-mb">
         <div class="profile-head">
-          <div class="avatar">MB</div>
+          <div class="avatar" aria-hidden="true">MB</div>
           <div>
             <h2>MB</h2>
-            <p class="small-muted">Seu cantinho</p>
+            <p class="small">Seu cantinho pessoal</p>
           </div>
         </div>
-        <div id="notas-mb" class="notas" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
-        <div class="coins">
-          <div class="coin-display">
-            <span class="coin-anim coin-bounce-left"></span>
-            <div class="coin-info">
-              <div class="small-muted">Moedas</div>
-              <div class="coin-count" id="moedas-mb">100</div>
-            </div>
-            <span class="coin-anim coin-bounce-right"></span>
+
+        <div class="notas" id="notas-mb" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
+
+        <div class="coins" style="margin-top:12px;">
+          <div>
+            <div class="small">Moedas</div>
+            <div class="coin-count" id="moedas-mb" aria-live="polite">100</div>
           </div>
           <div class="controls">
-            <button class="btn" onclick="alterarMoedas('mb', -getCoinStep())">-</button>
-            <button class="btn" onclick="alterarMoedas('mb', getCoinStep())">+</button>
+            <button class="btn" onclick="alterarMoedas('mb', -getCoinStep())" aria-label="Diminuir moedas MB">-</button>
+            <button class="btn" onclick="alterarMoedas('mb', getCoinStep())" aria-label="Aumentar moedas MB">+</button>
           </div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;justify-content:space-between;">
+          <button class="btn" onclick="resetProfile('mb')">Reset</button>
+          <button class="btn" onclick="exportProfile('mb')">Exportar</button>
         </div>
       </article>
 
-      <article class="card" id="card-nath">
+      <!-- Profile Nath -->
+      <article class="card" data-profile="nath" id="card-nath">
         <div class="profile-head">
-          <div class="avatar">N</div>
+          <div class="avatar" aria-hidden="true">N</div>
           <div>
             <h2>Nath</h2>
-            <p class="small-muted">Cantinho dela</p>
+            <p class="small">Cantinho dela</p>
           </div>
         </div>
-        <div id="notas-nath" class="notas" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
-        <div class="coins">
-          <div class="coin-display">
-            <span class="coin-anim coin-bounce-left"></span>
-            <div class="coin-info">
-              <div class="small-muted">Moedas</div>
-              <div class="coin-count" id="moedas-nath">100</div>
-            </div>
-            <span class="coin-anim coin-bounce-right"></span>
+
+        <div class="notas" id="notas-nath" contenteditable="true" data-placeholder="Escreva algo especial..."></div>
+
+        <div class="coins" style="margin-top:12px;">
+          <div>
+            <div class="small">Moedas</div>
+            <div class="coin-count" id="moedas-nath" aria-live="polite">100</div>
           </div>
           <div class="controls">
-            <button class="btn" onclick="alterarMoedas('nath', -getCoinStep())">-</button>
-            <button class="btn" onclick="alterarMoedas('nath', getCoinStep())">+</button>
+            <button class="btn" onclick="alterarMoedas('nath', -getCoinStep())" aria-label="Diminuir moedas Nath">-</button>
+            <button class="btn" onclick="alterarMoedas('nath', getCoinStep())" aria-label="Aumentar moedas Nath">+</button>
           </div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;justify-content:space-between;">
+          <button class="btn" onclick="resetProfile('nath')">Reset</button>
+          <button class="btn" onclick="exportProfile('nath')">Exportar</button>
         </div>
       </article>
     </div>
+  </section>
 
-    <!-- Chat -->
-    <div class="card chat-wrap">
-      <div class="chat-header">
-        <div>
-          <strong>Chat privado</strong>
-          <span class="small-muted">conversa entre MB e Nath</span>
-        </div>
-        <div>
-          <div class="small-muted">Logado como: <span id="logged-as">—</span></div>
-          <button class="btn" onclick="logout()">Sair</button>
-        </div>
-      </div>
-      <div class="messages" id="messages"></div>
-      <div class="composer">
-        <input type="text" id="message-input" placeholder="Escreva uma mensagem...">
-        <button class="send btn" onclick="sendComposer()">Enviar</button>
-      </div>
+  <aside class="panel" aria-label="Painel de ajustes">
+    <h3>⚙️ Ajustes</h3>
+
+    <div class="field">
+      <label class="small-muted">Cor principal (neon)</label>
+      <input type="color" id="input-accent" value="#b57bff">
     </div>
-  </main>
 
-  <!-- Login Modal -->
-  <div id="login-modal" class="modal-back">
-    <div class="modal">
-      <h3>Entrar no Nosso Cantinho</h3>
-      <div class="login-profiles">
-        <button onclick="startLogin('mb')">Entrar como MB</button>
-        <button onclick="startLogin('nath')">Entrar como Nath</button>
-      </div>
-      <div>
-        <input type="password" id="login-pass" placeholder="Digite a senha">
-      </div>
-      <div class="modal-actions">
-        <button class="btn" onclick="confirmLogin()">Confirmar</button>
-        <button class="btn" onclick="closeLogin()">Cancelar</button>
-      </div>
-      <div class="small-muted">Senha: <strong>9898</strong></div>
+    <div class="field">
+      <label class="small-muted">Cor secundária</label>
+      <input type="color" id="input-accent2" value="#6f3ec9">
     </div>
-  </div>
 
-  <footer>Feito com 💜 por MB & Nath • Tudo salvo localmente</footer>
+    <div class="field">
+      <label class="small-muted">Brilho (0.2 — 3)</label>
+      <input type="range" id="input-glow" min="0.2" max="3" step="0.1" value="1.2">
+    </div>
 
-  <script src="app.js"></script>
+    <div class="field">
+      <label class="small-muted">Fonte</label>
+      <select id="input-font">
+        <option value="Poppins, sans-serif">Poppins</option>
+        <option value="Inter, sans-serif">Inter</option>
+        <option value="Georgia, serif">Georgia</option>
+        <option value="Trebuchet MS, sans-serif">Trebuchet</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="small-muted">Tamanho da fonte (px)</label>
+      <input type="number" id="input-fontsize" min="12" max="22" step="1" value="16">
+    </div>
+
+    <div class="field">
+      <label class="small-muted">Incremento das moedas</label>
+      <input type="number" id="input-step" min="1" max="1000" value="10">
+    </div>
+
+    <div class="field toggle">
+      <input type="checkbox" id="toggle-particles" checked>
+      <label for="toggle-particles" class="small-muted">Mostrar partículas/névoa</label>
+    </div>
+
+    <div class="field">
+      <label class="small-muted">Título da página</label>
+      <input type="text" id="input-title" placeholder="Nosso Cantinho 💜" value="Nosso Cantinho 💜">
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn" onclick="salvarAjustes()">Salvar</button>
+      <button class="btn" onclick="resetAjustes()">Restaurar padrão</button>
+    </div>
+
+    <hr style="margin:12px 0;border:none;height:1px;background:rgba(255,255,255,0.03)">
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="small-muted">Backup / Importar</div>
+      <button class="btn" onclick="exportAll()">Exportar tudo</button>
+      <button class="btn" onclick="importPrompt()">Importar (colar JSON)</button>
+    </div>
+  </aside>
+</main>
+
+<footer>Feito com 💜 por MB & Nath • Tudo salvo localmente no navegador</footer>
+
+<script>
+/* ======================
+   Utility & state
+   ====================== */
+const STORAGE_KEY = 'nossoCantinho_v2';
+const DEFAULTS = {
+  settings: {
+    accent: '#b57bff',
+    accent2: '#6f3ec9',
+    glow: 1.2,
+    font: "Poppins, sans-serif",
+    fontsize: 16,
+    step: 10,
+    particles: true,
+    title: "Nosso Cantinho 💜"
+  },
+  profiles: {
+    mb: {notas: '', moedas: 100},
+    nath: {notas: '', moedas: 100}
+  }
+};
+
+let state = loadState() || DEFAULTS;
+
+/* Apply settings to CSS variables and UI */
+function applySettingsToUI(){
+  const s = state.settings;
+  document.documentElement.style.setProperty('--accent', s.accent);
+  document.documentElement.style.setProperty('--accent-2', s.accent2);
+  document.documentElement.style.setProperty('--glow', s.glow);
+  document.documentElement.style.setProperty('--font-family', s.font);
+  document.documentElement.style.setProperty('--coin-step', s.step);
+  document.documentElement.style.fontSize = s.fontsize + 'px';
+  document.getElementById('input-accent').value = s.accent;
+  document.getElementById('input-accent2').value = s.accent2;
+  document.getElementById('input-glow').value = s.glow;
+  document.getElementById('input-font').value = s.font;
+  document.getElementById('input-fontsize').value = s.fontsize;
+  document.getElementById('input-step').value = s.step;
+  document.getElementById('toggle-particles').checked = !!s.particles;
+  document.getElementById('input-title').value = s.title;
+  document.querySelector('h1').textContent = s.title;
+}
+
+/* Load/save state */
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){
+    console.warn("Erro ao carregar estado:", e);
+    return null;
+  }
+}
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.warn("Erro ao salvar estado:", e);
+  }
+}
+
+/* ======================
+   Profiles: notes & coins
+   ====================== */
+function renderProfiles(){
+  // notas
+  document.getElementById('notas-mb').innerText = state.profiles.mb.notas || '';
+  document.getElementById('moedas-mb').textContent = state.profiles.mb.moedas ?? 0;
+  document.getElementById('notas-nath').innerText = state.profiles.nath.notas || '';
+  document.getElementById('moedas-nath').textContent = state.profiles.nath.moedas ?? 0;
+}
+function alterarMoedas(profile, valor){
+  const p = state.profiles[profile];
+  if(!p) return;
+  const novo = Math.max(0, (Number(p.moedas)||0) + Number(valor));
+  p.moedas = novo;
+  saveState();
+  renderProfiles();
+  pulseCount(profile);
+}
+function getCoinStep(){
+  return Number(state.settings.step) || 10;
+}
+function pulseCount(profile){
+  const el = document.getElementById('moedas-'+profile);
+  if(!el) return;
+  el.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}], {duration:360, easing:'ease-out'});
+}
+
+/* Reset / export per profile */
+function resetProfile(profile){
+  if(!state.profiles[profile]) return;
+  state.profiles[profile] = {notas:'', moedas:100};
+  saveState(); renderProfiles();
+}
+function exportProfile(profile){
+  const p = state.profiles[profile];
+  const json = JSON.stringify({profile, data:p}, null, 2);
+  navigator.clipboard?.writeText(json).then(()=> alert('Perfil copiado para área de transferência.'))
+  .catch(()=> prompt('Copie este JSON:', json));
+}
+
+/* Global export/import */
+function exportAll(){
+  const json = JSON.stringify(state, null, 2);
+  navigator.clipboard?.writeText(json).then(()=> alert('Backup copiado para área de transferência.'))
+  .catch(()=> {
+    // fallback: download file
+    const blob = new Blob([json], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download='nossoCantinho_backup.json'; a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+function importPrompt(){
+  const raw = prompt('Cole o JSON do backup aqui (substitui tudo):');
+  if(!raw) return;
+  try{
+    const parsed = JSON.parse(raw);
+    state = parsed;
+    saveState();
+    applySettingsToUI();
+    renderProfiles();
+    alert('Importado com sucesso. Recarregue a página se necessário.');
+  }catch(e){
+    alert('JSON inválido.');
+  }
+}
+
+/* ======================
+   Settings controls
+   ====================== */
+function salvarAjustes(){
+  state.settings.accent = document.getElementById('input-accent').value;
+  state.settings.accent2 = document.getElementById('input-accent2').value;
+  state.settings.glow = Number(document.getElementById('input-glow').value);
+  state.settings.font = document.getElementById('input-font').value;
+  state.settings.fontsize = Number(document.getElementById('input-fontsize').value);
+  state.settings.step = Number(document.getElementById('input-step').value);
+  state.settings.particles = document.getElementById('toggle-particles').checked;
+  state.settings.title = document.getElementById('input-title').value || 'Nosso Cantinho 💜';
+  saveState(); applySettingsToUI();
+  alert('Ajustes salvos!');
+}
+function resetAjustes(){
+  state.settings = {...DEFAULTS.settings};
+  saveState(); applySettingsToUI(); alert('Ajustes restaurados para o padrão.');
+}
+
+/* ======================
+   Auto-save notes on input
+   ====================== */
+function hookNotesAutoSave(){
+  ['mb','nath'].forEach(id=>{
+    const el = document.getElementById('notas-'+id);
+    el.addEventListener('input', ()=> {
+      state.profiles[id].notas = el.innerText;
+      saveState();
+    });
+    // save on blur too
+    el.addEventListener('blur', ()=> {
+      state.profiles[id].notas = el.innerText;
+      saveState();
+    });
+  });
+}
+
+/* ======================
+   Startup
+   ====================== */
+function init(){
+  // merge defaults if needed
+  state = Object.assign({}, DEFAULTS, state);
+  state.settings = Object.assign({}, DEFAULTS.settings, state.settings || {});
+  state.profiles = Object.assign({}, DEFAULTS.profiles, state.profiles || {});
+  applySettingsToUI();
+  renderProfiles();
+  hookNotesAutoSave();
+
+  // listen to live changes of color inputs to preview
+  document.getElementById('input-accent').addEventListener('input', e=>{
+    document.documentElement.style.setProperty('--accent', e.target.value);
+  });
+  document.getElementById('input-accent2').addEventListener('input', e=>{
+    document.documentElement.style.setProperty('--accent-2', e.target.value);
+  });
+  document.getElementById('input-glow').addEventListener('input', e=>{
+    document.documentElement.style.setProperty('--glow', e.target.value);
+  });
+  document.getElementById('input-font').addEventListener('change', e=>{
+    document.documentElement.style.setProperty('--font-family', e.target.value);
+  });
+  document.getElementById('input-fontsize').addEventListener('input', e=>{
+    document.documentElement.style.fontSize = e.target.value + 'px';
+  });
+  document.getElementById('input-step').addEventListener('input', e=>{
+    document.documentElement.style.setProperty('--coin-step', e.target.value);
+  });
+  document.getElementById('input-title').addEventListener('input', e=>{
+    document.querySelector('h1').textContent = e.target.value;
+  });
+
+  // sync coins visible when step changed
+  document.getElementById('input-step').addEventListener('change', e=>{
+    state.settings.step = Number(e.target.value);
+    saveState();
+  });
+
+  // before unload save explicit
+  window.addEventListener('beforeunload', ()=> saveState());
+}
+
+/* ======================
+   Canvas Particles (soft fog + dots)
+   ====================== */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let resizeTimeout = null;
+function setupCanvas(){
+  canvas.width = innerWidth * devicePixelRatio;
+  canvas.height = innerHeight * devicePixelRatio;
+  canvas.style.width = innerWidth + 'px';
+  canvas.style.height = innerHeight + 'px';
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+function createParticles(){
+  particles = [];
+  const count = Math.round((innerWidth*innerHeight) / 70000);
+  for(let i=0;i<count;i++){
+    particles.push({
+      x: Math.random()*innerWidth,
+      y: Math.random()*innerHeight,
+      r: Math.random()*1.6 + 0.4,
+      vx: (Math.random()-0.5)*0.2,
+      vy: (Math.random()-0.5)*0.2,
+      alpha: Math.random()*0.6 + 0.1,
+      phase: Math.random()*Math.PI*2
+    });
+  }
+}
+let last = performance.now();
+function animateCanvas(t){
+  const dt = (t-last)/1000;
+  last = t;
+  if(!state.settings.particles){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    requestAnimationFrame(animateCanvas);
+    return;
+  }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // soft radial glow spots
+  const grad = ctx.createRadialGradient(innerWidth*0.15, innerHeight*0.12, 0, innerWidth*0.15, innerHeight*0.12, Math.max(innerWidth,innerHeight)*0.8);
+  grad.addColorStop(0, 'rgba(191,128,255,0.06)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,innerWidth,innerHeight);
+
+  // moving particles (small dots)
+  particles.forEach(p=>{
+    p.x += p.vx * (0.6 + Math.sin(t/2000 + p.phase)*0.3);
+    p.y += p.vy * (0.6 + Math.cos(t/2000 + p.phase)*0.3);
+    p.phase += 0.01;
+    if(p.x < -10) p.x = innerWidth + 10;
+    if(p.x > innerWidth + 10) p.x = -10;
+    if(p.y < -10) p.y = innerHeight + 10;
+    if(p.y > innerHeight + 10) p.y = -10;
+
+    ctx.beginPath();
+    ctx.globalAlpha = p.alpha * 0.9;
+    ctx.fillStyle = `rgba(200,150,255,${p.alpha * 0.9})`;
+    ctx.arc(p.x, p.y, p.r * (1 + Math.sin(p.phase)*0.4), 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // subtle horizontal scanline reflection
+  ctx.globalCompositeOperation = 'lighter';
+  for(let i=0;i<3;i++){
+    ctx.fillStyle = `rgba(255,255,255,${0.012 * (i+1) * state.settings.glow})`;
+    const h = (Math.sin(t/2000 + i)*0.5 + 0.5) * innerHeight;
+    ctx.fillRect(0, h, innerWidth, 1 + Math.abs(Math.sin(t/800 + i))*2);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(animateCanvas);
+}
+
+function onResize(){
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(()=>{
+    setupCanvas();
+    createParticles();
+  }, 120);
+}
+
+/* ======================
+   Helpers & Init calls
+   ====================== */
+
+init();
+setupCanvas();
+createParticles();
+requestAnimationFrame(animateCanvas);
+window.addEventListener('resize', onResize);
+
+/* load saved profiles and settings into UI */
+renderProfiles();
+applySettingsToUI();
+
+/* Expose some functions to window for buttons */
+window.alterarMoedas = alterarMoedas;
+window.getCoinStep = getCoinStep;
+window.salvarAjustes = salvarAjustes;
+window.resetAjustes = resetAjustes;
+window.resetProfile = resetProfile;
+window.exportProfile = exportProfile;
+window.exportAll = exportAll;
+window.importPrompt = importPrompt;
+
+/* If particles toggle changes, reflect immediately */
+document.getElementById('toggle-particles').addEventListener('change', e=>{
+  state.settings.particles = e.target.checked;
+  saveState();
+});
+
+/* Defensive: ensure state saved on first load */
+saveState();
+
+</script>
 </body>
 </html>
